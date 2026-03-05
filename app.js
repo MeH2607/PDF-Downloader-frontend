@@ -24,10 +24,30 @@ document.querySelector('.upload').addEventListener('submit', function(e) {
             alert(data.errors);
         } else {
             console.log("Success:", data);
+            getDownloadStatus();
+        }
+    })
+    
+    .catch(error => {
+        console.error("Error:", error);
+    });
+});
+
+
+function getDownloadStatus(){
+    fetch('http://localhost:8081/pdf/getStatusList', {
+        method: 'GET'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.errors) {
+            alert(data.errors);
+        } else {
+            console.log("Success:", data);
         }
     })
     .catch(error => {
         console.error("Error:", error);
     });
-});
+}
   
