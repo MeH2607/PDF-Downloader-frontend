@@ -16,18 +16,23 @@
             <input type="file" name="uploadFile" accept=".xlsx" required />
             <br /><br />
             <input type="submit" id="submitBtn"/>
+            <span class="loader"></span>
+
         </form>
 
+        <div class="table-wrapper">
+            
         <table id="resultTable">
-    <thead>
-        <tr>
-            <th>PDF URL</th>
-            <th>Status</th>
-            <th>Message</th>
-        </tr>
-    </thead>
-    <tbody></tbody>
-</table>
+            <h2 id="tableTitle"></h2>
+            <thead>
+                <tr>
+                    <th>PDF Name</th>
+                    <th>Download Status</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </div>
     </div>
 
 

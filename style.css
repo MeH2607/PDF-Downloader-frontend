@@ -3,7 +3,60 @@
   inset: 0px;
   width: 12rem;
   height: 5rem;
-  max-width: 100vw;
+  max-width: 200vw;
   max-height: 100dvh;
   margin: auto;
+}
+
+.loader {
+    width: 48px;
+    height: 48px;
+    border: 5px solid #FFF;
+    border-bottom-color: #FF3D00;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+    display: none;
+    }
+
+/* make table area scrollable when it overflows */
+.table-wrapper {
+    max-height: 60vh; /* adjust as needed */
+    overflow-y: auto;
+    margin-top: 1rem;
+}
+
+/* widen the first column (PDF Name) */
+#resultTable th:first-child,
+#resultTable td:first-child {
+    width: 40%; /* increase as needed */
+    word-break: break-word;
+}
+
+/* optional: make container wider for table */
+.container {
+       position: fixed;
+  inset: 0px;
+  width: 90vw;
+  height: auto;
+  max-width: 200vw;
+  max-height: 100dvh;
+  margin: auto;
+}
+
+
+    @keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+    } 
+
+#resultTable {
+    display: none; /* hide the table by default */
+    width: 100%;
+    border-collapse: collapse;
 }
