@@ -16,9 +16,9 @@ document.querySelector('.upload').addEventListener('submit', function (e) {
     }
 
 
-    
-        spinner.style.display = "block";
-    
+
+    spinner.style.display = "block";
+
 
 
     if (!file) {
@@ -56,7 +56,7 @@ document.querySelector('.upload').addEventListener('submit', function (e) {
                 submitBtn.textContent = "Submit"; // or whatever your original text is
                 submitBtn.disabled = false;
 
-                getDownloadStatus();
+                printDownloadStatus(data);
             }
         })
 
@@ -68,58 +68,7 @@ document.querySelector('.upload').addEventListener('submit', function (e) {
 });
 
 
-function getDownloadStatus() {
 
-    const table = document.getElementById('resultTable');
-    const tableBody = document.getElementById('tableBody');
-
-    fetch('http://localhost:8081/pdf/getCache')
-        .then(response => response.json())
-        .then(data => {
-
-            console.log("Success:", data);
-
-            if (!Array.isArray(data)) {
-                console.error("Unexpected response:", data);
-                return;
-            }
-
-           
-
-            tableBody.innerHTML = "";
-
-            let html = '';
-            let titleSet = false;
-            data.forEach(item => {
-
-                if(data.filePath != null && !titleSet) {
-                    document.getElementById('tableTitle').innerHTML = `Files saved on: ${getFolderPath(item.filePath)}`;
-                    titleSet = true;
-                } //TODO fix
-
-                html += `
-                    <tr>
-                        <td>${item.fileName}</td>
-                        <td>${item.isDownloaded ? "Yes" : "No"}</td>
-                    </tr>
-                `;
-            });
-
-            tableBody.innerHTML = html;
-
-                        document.getElementById('tableTitle').innerHTML = `Files saved on: ${getFolderPath(data[0]?.filePath)}`;
-
-
-            if (table.style.display === "none") {
-                table.style.display = "block";
-            }
-
-        })
-        .catch(error => {
-            console.error("Error:", error);
-            alert("Failed to fetch download status.");
-        });
-}
 
 function getFolderPath(fullPath) {
     if (!fullPath) return "";
@@ -147,4 +96,48 @@ function getFolderPath(fullPath) {
     }
 
     return folderPath;
+}
+
+function printDownloadStatus(data) {
+
+    const table = document.getElementById('resultTable');
+    const tableBody = document.getElementById('tableBody');
+
+    if (!Array.isArray(data)) {
+        console.error("Unexpected response:", data);
+        return;
+    }
+
+
+
+    tableBody.innerHTML = "";
+
+    let html = '';
+    //let titleSet = false;
+
+    data.forEach(item => {
+
+        if (data.filePath != null /*&& !titleSet*/) {
+            document.getElementById('tableTitle').innerHTML = `Files saved on: ${getFolderPath(item.filePath)}`;
+           //titleSet = true;
+        } //TODO fix
+
+        html += `
+                    <tr>
+                        <td>${item.fileName}</td>
+                        <td>${item.isDownloaded ? "Yes" : "No"}</td>
+                    </tr>
+                `;
+    });
+
+    tableBody.innerHTML = html;
+
+    document.getElementById('tableTitle').innerHTML = `Files saved on: ${getFolderPath(data[0]?.filePath)}`;
+
+
+    if (table.style.display === "none") {
+        table.style.display = "block";
+    }
+
+
 }
