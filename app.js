@@ -125,7 +125,7 @@ function printDownloadStatus(data) {
         html += `
                     <tr>
                         <td>${item.fileName}</td>
-                        <td>${item.isDownloaded ? "Yes" : "No"}</td>
+                        <td style="text-align: right;">${item.downloaded ? "Yes" : "No"}</td>
                     </tr>
                 `;
     });
