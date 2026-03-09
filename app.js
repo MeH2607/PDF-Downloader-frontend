@@ -113,13 +113,13 @@ function printDownloadStatus(data) {
     tableBody.innerHTML = "";
 
     let html = '';
-    //let titleSet = false;
+    let titleSet = false;
 
     data.forEach(item => {
 
-        if (data.filePath != null /*&& !titleSet*/) {
-            document.getElementById('tableTitle').innerHTML = `Files saved on: ${getFolderPath(item.filePath)}`;
-           //titleSet = true;
+        if (data.filePath != null && !titleSet) {
+            document.getElementById('tableTitle').innerHTML = `Files saved on: ${getFolderPath(data[0]?.filePath)}`;
+           titleSet = true;
         } //TODO fix
 
         html += `
@@ -132,7 +132,6 @@ function printDownloadStatus(data) {
 
     tableBody.innerHTML = html;
 
-    document.getElementById('tableTitle').innerHTML = `Files saved on: ${getFolderPath(data[0]?.filePath)}`;
 
 
     if (table.style.display === "none") {
