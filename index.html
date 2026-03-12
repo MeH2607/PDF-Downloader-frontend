@@ -15,15 +15,16 @@
         <form class="upload">
             <input type="file" name="uploadFile" accept=".xlsx" required />
             <br /><br />
-            <input type="submit" id="submitBtn"/>
+            <input type="submit" id="submitBtn" value="Upload excell file"/>
+            <input type="submit" id="deleteBtn" value="Delete status table"/>
             <span class="loader"></span>
 
         </form>
 
         <div class="table-wrapper">
-            
-        <table id="resultTable">
             <h2 id="tableTitle"></h2>
+        <table id="resultTable">
+            
             <thead>
                 <tr>
                     <th>PDF Name</th>

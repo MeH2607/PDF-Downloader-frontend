@@ -1,142 +1,188 @@
+deleteBtn.disabled = true;
+deleteBtn.addEventListener("click", deleteStatus);
 
+document.querySelector(".upload").addEventListener("submit", function (e) {
+  e.preventDefault();
 
-document.querySelector('.upload').addEventListener('submit', function (e) {
-    e.preventDefault();
+  const fileInput = e.target.uploadFile;
+  const file = fileInput.files[0];
 
-    const fileInput = e.target.uploadFile;
-    const file = fileInput.files[0];
+  var submitBtn = document.getElementById("submitBtn");
+  var deleteBtn = document.getElementById("deleteBtn");
+  var table = document.getElementById("resultTable");
+  var spinner = document.querySelector(".loader");
 
-    var submitBtn = document.getElementById('submitBtn');
-    var table = document.getElementById('resultTable');
-    var spinner = document.querySelector('.loader');
+  if (table.style.display != "block") {
+    table.style.display = "none"; // hide the table by default and when pressing the button
+  }
 
+  spinner.style.display = "block";
 
-    if (table.style.display != "block") {
-        table.style.display = "none"; // hide the table by default and when pressing the button
-    }
+  if (!file) {
+    alert("Please select a file.");
+    return;
+  }
 
+  const formData = new FormData();
+  formData.append("file", file); // Must match @RequestParam("file")
 
+  submitBtn.value = "processing...";
+  submitBtn.disabled = true;
 
-    spinner.style.display = "block";
+  fetch("http://localhost:8081/pdf/upload-excel", {
+    method: "POST",
+    body: formData,
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.errors) {
+        spinner.style.display = "none";
+        submitBtn.textContent = "Submit";
+        submitBtn.disabled = false;
 
+        alert(data.errors);
+      } else {
+        console.log("Success:", data);
 
+        spinner.style.display = "none";
 
-    if (!file) {
-        alert("Please select a file.");
-        return;
-    }
+        submitBtn.textContent = "Submit"; // or whatever your original text is
+        submitBtn.disabled = false;
+       // deleteBtn.disabled = false; //commented out until fixed
 
-
-
-    const formData = new FormData();
-    formData.append('file', file);   // Must match @RequestParam("file")
-
-    submitBtn.textContent = "processing...";
-    submitBtn.disabled = true;
-
-    fetch('http://localhost:8081/pdf/upload-excel', {
-        method: 'POST',
-        body: formData
+        printDownloadStatus(data);
+      }
     })
-        .then(response => response.json())
-        .then(data => {
-            if (data.errors) {
-                spinner.style.display = "none";
-                submitBtn.textContent = "Submit";
-                submitBtn.disabled = false;
 
-
-
-                alert(data.errors);
-            } else {
-                console.log("Success:", data);
-
-                spinner.style.display = "none";
-
-                submitBtn.textContent = "Submit"; // or whatever your original text is
-                submitBtn.disabled = false;
-
-                printDownloadStatus(data);
-            }
-        })
-
-        .catch(error => {
-            submitBtn.textContent = "Submit";
-            submitBtn.disabled = false;
-            console.error("Error:", error);
-        });
+    .catch((error) => {
+      submitBtn.textContent = "Submit";
+      submitBtn.disabled = false;
+     // deleteBtn.disabled = false; //commented out until fixed
+      console.error("Error:", error);
+    });
 });
 
-
-
-
 function getFolderPath(fullPath) {
-    if (!fullPath) return "";
+  if (!fullPath) return "";
 
-    // Normalize slashes for Windows and Unix
-    const normalizedPath = fullPath.replace(/\\/g, '/');
+  // Normalize slashes for Windows and Unix
+  const normalizedPath = fullPath.replace(/\\/g, "/");
 
-    // Find the index of the folder you want to keep (e.g., /Downloads/Reports)
-    const folderIndex = normalizedPath.toLowerCase().indexOf("/downloads/reports");
+  // Find the index of the folder you want to keep (e.g., /Downloads/Reports)
+  const folderIndex = normalizedPath
+    .toLowerCase()
+    .indexOf("/downloads/reports");
 
-    let folderPath;
-    if (folderIndex !== -1) {
-        // Take from /Downloads/Reports onward
-        folderPath = normalizedPath.substring(folderIndex);
-    } else {
-        // fallback: take parent folder
-        const lastSlash = normalizedPath.lastIndexOf('/');
-        folderPath = lastSlash !== -1 ? normalizedPath.substring(0, lastSlash) : normalizedPath;
-    }
+  let folderPath;
+  if (folderIndex !== -1) {
+    // Take from /Downloads/Reports onward
+    folderPath = normalizedPath.substring(folderIndex);
+  } else {
+    // fallback: take parent folder
+    const lastSlash = normalizedPath.lastIndexOf("/");
+    folderPath =
+      lastSlash !== -1
+        ? normalizedPath.substring(0, lastSlash)
+        : normalizedPath;
+  }
 
-    // Ensure filename is removed: remove everything after the last slash
-    const lastSlash = folderPath.lastIndexOf('/');
-    if (lastSlash !== -1) {
-        folderPath = folderPath.substring(0, lastSlash);
-    }
+  // Ensure filename is removed: remove everything after the last slash
+  const lastSlash = folderPath.lastIndexOf("/");
+  if (lastSlash !== -1) {
+    folderPath = folderPath.substring(0, lastSlash);
+  }
 
-    return folderPath;
+  return folderPath;
 }
 
 function printDownloadStatus(data) {
+  const table = document.getElementById("resultTable");
+  const tableBody = document.getElementById("tableBody");
 
-    const table = document.getElementById('resultTable');
-    const tableBody = document.getElementById('tableBody');
+  if (!Array.isArray(data)) {
+    console.error("Unexpected response:", data);
+    return;
+  }
 
-    if (!Array.isArray(data)) {
-        console.error("Unexpected response:", data);
-        return;
-    }
+  tableBody.innerHTML = "";
 
+  let html = "";
+  let titleSet = false;
 
+  data.forEach((item) => {
+    if (!titleSet && data[0]?.filePath) {
+      document.getElementById("tableTitle").innerHTML =
+        `Files saved on: ${getFolderPath(data[0].filePath)}`;
+      titleSet = true;
+    } //TODO fix
 
-    tableBody.innerHTML = "";
-
-    let html = '';
-    let titleSet = false;
-
-    data.forEach(item => {
-
-        if (data.filePath != null && !titleSet) {
-            document.getElementById('tableTitle').innerHTML = `Files saved on: ${getFolderPath(data[0]?.filePath)}`;
-           titleSet = true;
-        } //TODO fix
-
-        html += `
+    html += `
                     <tr>
                         <td>${item.fileName}</td>
                         <td style="text-align: right;">${item.downloaded ? "Yes" : "No"}</td>
                     </tr>
                 `;
+  });
+
+  tableBody.innerHTML = html;
+
+  if (table.style.display === "none") {
+    table.style.display = "block";
+  }
+}
+
+/*
+function deleteStatus() {
+  const table = document.getElementById("resultTable");
+
+  const tableBody = document.getElementById("tableBody");
+
+  fetch("http://localhost:8081/pdf/delete-path", {
+    method: "DELETE",
+  })
+    .then((response) => response.text())
+    .then((data) => {
+      if (data.errors) {
+        alert(response.text());
+      } else {
+        console.log("Success:", data);
+
+        while (tableBody.rows.length > 0) {
+          tableBody.deleteRow(0);
+        }
+
+        table.style.display = "none";
+        deleteBtn.disabled = true;
+      }
     });
+}*/
 
-    tableBody.innerHTML = html;
+function deleteStatus() {
+  const table = document.getElementById("resultTable");
+  const tableBody = document.getElementById("tableBody");
 
+  if (!tableBody) return;
 
+  fetch("http://localhost:8081/pdf/delete-path", {
+    method: "DELETE",
+  })
+    .then((response) => response.text()) // keep text() since server returns text
+    .then((data) => {
+      console.log("Server response:", data);
 
-    if (table.style.display === "none") {
-        table.style.display = "block";
-    }
+      // Clear all rows from the tbody
+      while (tableBody.rows.length > 0) {
+        tableBody.deleteRow(0);
+      }
 
+      // Hide the table
+      table.style.display = "none";
 
+      // Disable delete button
+      deleteBtn.disabled = true;
+
+      // Optional: alert success if server sends a message
+      // alert(data);
+    })
+    .catch((err) => console.error("Error:", err));
 }
