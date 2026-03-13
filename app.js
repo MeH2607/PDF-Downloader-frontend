@@ -1,4 +1,3 @@
-deleteBtn.disabled = true;
 deleteBtn.addEventListener("click", deleteStatus);
 
 document.querySelector(".upload").addEventListener("submit", function (e) {
@@ -48,7 +47,7 @@ document.querySelector(".upload").addEventListener("submit", function (e) {
 
         submitBtn.textContent = "Submit"; // or whatever your original text is
         submitBtn.disabled = false;
-       // deleteBtn.disabled = false; //commented out until fixed
+        deleteBtn.disabled = false;
 
         printDownloadStatus(data);
       }
@@ -57,7 +56,7 @@ document.querySelector(".upload").addEventListener("submit", function (e) {
     .catch((error) => {
       submitBtn.textContent = "Submit";
       submitBtn.disabled = false;
-     // deleteBtn.disabled = false; //commented out until fixed
+      deleteBtn.disabled = false; 
       console.error("Error:", error);
     });
 });
@@ -114,7 +113,7 @@ function printDownloadStatus(data) {
       document.getElementById("tableTitle").innerHTML =
         `Files saved on: ${getFolderPath(data[0].filePath)}`;
       titleSet = true;
-    } //TODO fix
+    } 
 
     html += `
                     <tr>
@@ -131,35 +130,10 @@ function printDownloadStatus(data) {
   }
 }
 
-/*
-function deleteStatus() {
-  const table = document.getElementById("resultTable");
-
-  const tableBody = document.getElementById("tableBody");
-
-  fetch("http://localhost:8081/pdf/delete-path", {
-    method: "DELETE",
-  })
-    .then((response) => response.text())
-    .then((data) => {
-      if (data.errors) {
-        alert(response.text());
-      } else {
-        console.log("Success:", data);
-
-        while (tableBody.rows.length > 0) {
-          tableBody.deleteRow(0);
-        }
-
-        table.style.display = "none";
-        deleteBtn.disabled = true;
-      }
-    });
-}*/
-
 function deleteStatus() {
   const table = document.getElementById("resultTable");
   const tableBody = document.getElementById("tableBody");
+  const tableTitle = document.getElementById("tableTitle");
 
   if (!tableBody) return;
 
@@ -175,8 +149,10 @@ function deleteStatus() {
         tableBody.deleteRow(0);
       }
 
-      // Hide the table
+      // Hide the table and remove the title
       table.style.display = "none";
+      tableTitle.innerHTML = "";
+      
 
       // Disable delete button
       deleteBtn.disabled = true;

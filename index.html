@@ -11,29 +11,29 @@
 <body>
 
 
-    <div class = "container">
+    <div class="container">
         <form class="upload">
             <input type="file" name="uploadFile" accept=".xlsx" required />
             <br /><br />
-            <input type="submit" id="submitBtn" value="Upload excell file"/>
-            <input type="submit" id="deleteBtn" value="Delete status table"/>
+            <input type="submit" id="submitBtn" value="Upload excel file" />
+            <input type="submit" id="deleteBtn" value="Delete files and report" />
             <span class="loader"></span>
 
         </form>
 
         <div class="table-wrapper">
             <h2 id="tableTitle"></h2>
-        <table id="resultTable">
-            
-            <thead>
-                <tr>
-                    <th>PDF Name</th>
-                    <th style="text-align: right;">Download Status</th>
-                </tr>
-            </thead>
-            <tbody id="tableBody"></tbody>
-        </table>
-    </div>
+            <table id="resultTable">
+
+                <thead>
+                    <tr>
+                        <th>PDF Name</th>
+                        <th style="text-align: right;">Download Status</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
     </div>
 
 
